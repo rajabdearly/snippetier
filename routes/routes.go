@@ -72,3 +72,44 @@ func DeleteSnippet(storage *db.Storage) echo.HandlerFunc {
 		return c.NoContent(http.StatusNoContent)
 	}
 }
+
+// GetUser retrieves a user by ID and returns it.
+func GetUser(storage *db.Storage) echo.HandlerFunc {
+	return func(c echo.Context) error {
+		userID := c.Param("id")
+		id, err := strconv.Atoi(userID)
+		if err != nil {
+			return c.JSON(http.StatusBadRequest, map[string]string{"error": "Invalid user ID"})
+		}
+
+		user, err := storage.GetUserByID(id)
+		if err != nil {
+			return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Failed to retrieve user"})
+		}
+
+		return c.JSON(http.StatusOK, user)
+	}
+}
+
+// UpdateUser updates an existing user and returns the updated user.
+func UpdateUser(storage *db.Storage) echo.HandlerFunc {
+	return func(c echo.Context) error {
+		userID := c.Param("id")
+		id, err := strconv.Atoi(userID)
+		if err != nil {
+			return c.JSON(http.StatusBadRequest, map[string]string{"error": "Invalid user ID"})
+		}
+
+		var user db.User
+		if err := c.Bind(&user); err != nil {
+			return c.JSON(http.StatusBadRequest, map[string]string{"error": "Invalid request body"})
+		}
+
+		updatedUser, err := storage.UpdateUser(id, user.Username, user.Email, user.FullName)
+		if err != nil {
+			return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Failed to update user"})
+		}
+
+		return c.JSON(http.StatusOK, updatedUser)
+	}
+}

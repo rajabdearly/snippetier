@@ -28,10 +28,12 @@ func main() {
 	}
 
 	e.GET("/snippets", routes.GetAllSnippets(storage))
-
 	e.POST("/snippets/new", routes.SaveSnippet(storage))
 	e.PUT("/snippets/:id", routes.UpdateSnippet(storage))
 	e.DELETE("/snippets/:id", routes.DeleteSnippet(storage))
+
+	e.GET("/users/:id", routes.GetUser(storage))
+	e.PUT("/users/:id", routes.UpdateUser(storage))
 
 	err = e.Start(":1323")
 
