@@ -1,5 +1,5 @@
-INSERT INTO users (username, email)
-VALUES ('some_username', 'user@example.com');
+INSERT INTO users (username, email, full_name)
+VALUES ('some_username', 'user@example.com', 'Semashka Vicini');
 
 
 -- Inserting data into the "snippets" table with random code snippets
