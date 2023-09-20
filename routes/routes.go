@@ -14,7 +14,6 @@ func Hello(c echo.Context) error {
 }
 
 func SetupRoutes(e *echo.Echo, s *db.Storage) {
-	e.GET("/", Hello)
 
 	apiGroup := e.Group("api")
 
