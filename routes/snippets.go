@@ -25,7 +25,7 @@ func getAllSnippets(storage *db.Storage) echo.HandlerFunc {
 
 func saveSnippet(storage *db.Storage) echo.HandlerFunc {
 	return func(c echo.Context) error {
-		parsedUserId := c.Request().Header.Get(userIdHeader)
+		parsedUserId := c.Request().Header.Get(UserIdHeader)
 		userId, err := strconv.Atoi(parsedUserId)
 		if err != nil {
 			return c.JSON(http.StatusBadRequest, map[string]string{"error": "Invalid user ID"})
@@ -47,7 +47,7 @@ func saveSnippet(storage *db.Storage) echo.HandlerFunc {
 
 func updateSnippet(storage *db.Storage) echo.HandlerFunc {
 	return func(c echo.Context) error {
-		parsedUserId := c.Request().Header.Get(userIdHeader)
+		parsedUserId := c.Request().Header.Get(UserIdHeader)
 		userId, err := strconv.Atoi(parsedUserId)
 		if err != nil {
 			return c.JSON(http.StatusBadRequest, map[string]string{"error": "Invalid user ID"})

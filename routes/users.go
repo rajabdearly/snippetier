@@ -35,7 +35,7 @@ func getUserById(storage *db.Storage) echo.HandlerFunc {
 
 func getUserMe(storage *db.Storage) echo.HandlerFunc {
 	return func(c echo.Context) error {
-		userID := c.Request().Header.Get(userIdHeader)
+		userID := c.Request().Header.Get(UserIdHeader)
 		id, err := strconv.Atoi(userID)
 		if err != nil {
 			return c.JSON(http.StatusBadRequest, map[string]string{"error": "Invalid user ID"})

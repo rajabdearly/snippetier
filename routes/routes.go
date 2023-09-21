@@ -2,18 +2,16 @@ package routes
 
 import (
 	"net/http"
+	"snippetier/configs"
 	"snippetier/db"
 
 	"github.com/labstack/echo/v4"
 )
 
-const userIdHeader = "sn-trusted-user-id"
+const UserIdHeader = "sn-trusted-user-id"
 
-func Hello(c echo.Context) error {
-	return c.String(http.StatusOK, "Hello, braaaat!")
-}
-
-func SetupRoutes(e *echo.Echo, s *db.Storage) {
+// SetupRoutes sets up all the routes for the application
+func SetupRoutes(e *echo.Echo, s *db.Storage, config *configs.Config) {
 
 	apiGroup := e.Group("api")
 
@@ -26,4 +24,7 @@ func SetupRoutes(e *echo.Echo, s *db.Storage) {
 
 	usersGroup := apiGroup.Group("/users")
 	SetupUserRoutes(usersGroup, s)
+
+	authGroup := e.Group("/auth")
+	setupAuthRoutes(authGroup, s, config)
 }
