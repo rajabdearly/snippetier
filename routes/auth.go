@@ -18,7 +18,7 @@ func setupAuthRoutes(g *echo.Group, _ *db.Storage, config *configs.Config) {
 }
 
 func loginHandler(c echo.Context) error {
-	return c.HTML(http.StatusOK, `<a href="/auth/login/github">Login with Github</a>`)
+	return c.Render(http.StatusOK, "login", nil)
 }
 
 func githubLoginHandler(githubClientID string) echo.HandlerFunc {
@@ -44,21 +44,32 @@ func githubCallbackHandler(config *configs.Config) echo.HandlerFunc {
 
 		githubAccessToken := auth.GetGithubAccessToken(code, config)
 
-		githubData := auth.GetGithubData(githubAccessToken)
+		githubData := auth.GetGithubProfileData(githubAccessToken)
 		if githubData == "" {
 			// Unauthorized users get an unauthorized message
 			return c.String(http.StatusUnauthorized, "UNAUTHORIZED!")
 		}
 
 		// Prettifying the json
-		var prettyJSON bytes.Buffer
-		parser := json.Indent(&prettyJSON, []byte(githubData), "", "\t")
-		if parser != nil {
+		var profileJson bytes.Buffer
+		err := json.Indent(&profileJson, []byte(githubData), "", "\t")
+		if err != nil {
+			return c.JSON(http.StatusInternalServerError, map[string]string{"error": "JSON parse error"})
+		}
+
+		githubEmails := auth.GetGithubUserEmails(githubAccessToken)
+		if githubEmails == "" {
+			return c.String(http.StatusUnauthorized, "UNAUTHORIZED!")
+		}
+
+		var emailsJson bytes.Buffer
+		err = json.Indent(&emailsJson, []byte(githubEmails), "", "\t")
+		if err != nil {
 			return c.JSON(http.StatusInternalServerError, map[string]string{"error": "JSON parse error"})
 		}
 
 		// Return the prettified JSON as a string
-		return c.String(http.StatusOK, prettyJSON.String())
+		return c.String(http.StatusOK, profileJson.String()+"\n"+emailsJson.String())
 
 	}
 }

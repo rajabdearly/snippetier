@@ -1,12 +1,13 @@
 package main
 
 import (
-	"fmt"
+	"html/template"
 	"log"
 	"net/http"
 	"snippetier/configs"
 	"snippetier/db"
 	"snippetier/routes"
+	renderer "snippetier/templates"
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
@@ -19,21 +20,21 @@ func main() {
 		log.Fatal("Error while reading config: ", err)
 	}
 
-	db.SetupNewTestDb(config.DbName)
-	storage, err := db.GetConnection(config.DbName)
+	storage, err := db.GetConnection()
 	defer storage.CloseConnection()
 	if err != nil {
-		log.Fatal("Seding failed with err: ", err)
+		log.Fatal("Failed to connect to db", err)
 	}
 
+	t := &renderer.Template{
+		Templates: template.Must(template.ParseGlob("templates/*.html")),
+	}
 	e := echo.New()
+	e.Renderer = t
 	e.Use(middleware.Logger())
 	e.Use(middleware.RequestID())
 	e.Use(middleware.Recover())
-
 	routes.SetupRoutes(e, storage, config)
-	fmt.Println(config)
-
 	e.GET("/", rootHandler)
 
 	err = e.Start(":1323")

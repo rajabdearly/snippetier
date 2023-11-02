@@ -29,7 +29,6 @@ func GetConfig() (*Config, error) {
 	}
 
 	cfg := Config{
-		DbName:             os.Getenv("DB_NAME"),
 		GithubClientId:     os.Getenv("GITHUB_CLIENT_ID"),
 		GithubClientSecret: os.Getenv("GITHUB_CLIENT_SECRET"),
 	}

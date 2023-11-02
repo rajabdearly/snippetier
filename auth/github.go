@@ -62,11 +62,40 @@ func GetGithubAccessToken(code string, config *configs.Config) string {
 	return githubResponse.AccessToken
 }
 
-func GetGithubData(accessToken string) string {
+func GetGithubProfileData(accessToken string) string {
 	// Get request to a set URL
 	req, err := http.NewRequest(
 		"GET",
 		"https://api.github.com/user",
+		nil,
+	)
+	if err != nil {
+		log.Panic("API Request creation failed")
+	}
+
+	// Set the Authorization header before sending the request
+	// Authorization: token XXXXXXXXXXXXXXXXXXXXXXXXXXX
+	authorizationHeaderValue := fmt.Sprintf("token %s", accessToken)
+	req.Header.Set("Authorization", authorizationHeaderValue)
+
+	// Make the request
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		log.Panic("Request failed")
+	}
+
+	// Read the response as a byte slice
+	respbody, _ := io.ReadAll(resp.Body)
+
+	// Convert byte slice to string and return
+	return string(respbody)
+}
+
+func GetGithubUserEmails(accessToken string) string {
+	// Get request to a set URL
+	req, err := http.NewRequest(
+		"GET",
+		"https://api.github.com/user/emails",
 		nil,
 	)
 	if err != nil {
